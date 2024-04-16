@@ -23,6 +23,9 @@ class AndroidController:
     def tap(self, pos):
         return execute_command(f"adb -s {self.device} shell input tap {pos[0]} {pos[1]}")
 
+    def touch_hold(self, pos, duration=1000):
+        return execute_command(f"adb -s {self.device} shell input swipe {pos[0]} {pos[1]} {pos[0]} {pos[1]} {duration}")
+
     def swipe_point(self, pos, direction, length=2, duration=400):
         """
         Swipes on the screen, starting at pos and towards the given direction for the specified length and time duration.
