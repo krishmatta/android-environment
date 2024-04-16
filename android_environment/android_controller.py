@@ -20,6 +20,9 @@ class AndroidController:
         ret = execute_command(f"adb -s {self.device} shell wm size")
         return map(int, ret.split(": ")[1].split("x"))
 
+    def back(self):
+        return execute_command(f"adb -s {self.device} shell input keyevent KEYCODE_BACK")
+
     def tap(self, pos):
         return execute_command(f"adb -s {self.device} shell input tap {pos[0]} {pos[1]}")
 
