@@ -43,3 +43,8 @@ class AndroidController:
         Swipes from start to end for the specified time duration.
         """
         return execute_command(f"adb -s {self.device} shell input swipe {start[0]} {start[1]} {end[0]} {end[1]} {duration}")
+
+    def type(self, string):
+        string = string.replace(" ", "%s")
+        string = string.replace("'", "")
+        return execute_command(f"adb -s {self.device} shell input text {string}")
