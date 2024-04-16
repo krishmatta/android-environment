@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 def execute_command(cmd):
     result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -19,6 +20,16 @@ class AndroidController:
     def get_device_size(self):
         ret = execute_command(f"adb -s {self.device} shell wm size")
         return map(int, ret.split(": ")[1].split("x"))
+
+    def get_screenshot(self, path):
+        return execute_command(f"adb -s {self.device} exec-out screencap -p > {path}")
+
+    def get_xml(self, path):
+        prefix = os.path.basename(path)
+        dump = f"adb -s {self.device} shell uiautomator dump /sdcard/{prefix}"
+        pull = f"adb -s {self.device} pull /sdcard/{prefix} {path}"
+        execute_command(dump)
+        return execute_command(pull)
 
     def back(self):
         return execute_command(f"adb -s {self.device} shell input keyevent KEYCODE_BACK")
