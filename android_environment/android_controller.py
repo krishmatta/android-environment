@@ -31,6 +31,9 @@ class AndroidController:
         execute_command(dump)
         return execute_command(pull)
 
+    def home(self):
+        return execute_command(f"adb -s {self.device} shell input keyevent KEYCODE_HOME")
+
     def back(self):
         return execute_command(f"adb -s {self.device} shell input keyevent KEYCODE_BACK")
 
