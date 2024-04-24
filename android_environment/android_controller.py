@@ -31,6 +31,9 @@ class AndroidController:
         execute_command(dump)
         return execute_command(pull)
 
+    def install_apk(self, apk_path):
+        return execute_command(f"adb -s {self.device} install {apk_path}")
+
     def home(self):
         return execute_command(f"adb -s {self.device} shell input keyevent KEYCODE_HOME")
 
