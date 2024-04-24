@@ -16,10 +16,16 @@ class AndroidController:
     def __init__(self, device):
         self.device = device
         self.width, self.height = self.get_device_size()
+        self.log_process = subprocess.Popen(["adb", "-s", self.device, "logcat"], stdout=subprocess.PIPE)
+        os.set_blocking(self.log_process.stdout.fileno(), False) # To make readline from log process non-blocking
 
     def get_device_size(self):
         ret = execute_command(f"adb -s {self.device} shell wm size")
         return map(int, ret.split(": ")[1].split("x"))
+
+    def get_log(self):
+        for line in iter(lambda: self.log_process.stdout.readline(), b''):
+            yield line.decode().strip()
 
     def get_screenshot(self, path):
         return execute_command(f"adb -s {self.device} exec-out screencap -p > {path}")
