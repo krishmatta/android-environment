@@ -1,5 +1,6 @@
 import subprocess
 import os
+import time
 
 def execute_command(cmd):
     result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -16,6 +17,9 @@ class AndroidController:
     def __init__(self, device):
         self.device = device
         self.width, self.height = self.get_device_size()
+        self.init_log_process()
+
+    def init_log_process(self):
         self.log_process = subprocess.Popen(["adb", "-s", self.device, "logcat"], stdout=subprocess.PIPE)
         os.set_blocking(self.log_process.stdout.fileno(), False) # To make readline from log process non-blocking
 
@@ -39,6 +43,17 @@ class AndroidController:
 
     def install_apk(self, apk_path):
         return execute_command(f"adb -s {self.device} install {apk_path}")
+
+    def reboot(self):
+        ret = execute_command(f"adb reboot")
+        time.sleep(20) # Block until reboot is complete
+        # Reset log process
+        self.log_process.kill()
+        self.init_log_process()
+        return ret
+
+    def open_app(self, app):
+        return execute_command(f"adb -s {self.device} shell am start -n {app}")
 
     def home(self):
         return execute_command(f"adb -s {self.device} shell input keyevent KEYCODE_HOME")
