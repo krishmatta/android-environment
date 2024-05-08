@@ -2,6 +2,7 @@ import android_controller
 import gym
 import numpy as np
 import tempfile
+import time
 import xml.etree.ElementTree as ET
 from gym import spaces
 from PIL import Image
@@ -38,6 +39,9 @@ class AndroidEnv(gym.Env):
 
     def _get_obs(self):
         ret = {}
+
+        # Sleep to wait for action effect
+        time.sleep(1)
 
         # First get image
         f = tempfile.NamedTemporaryFile()
@@ -88,6 +92,8 @@ class AndroidEnv(gym.Env):
         return self.reward_fn(self.android_controller.get_log())
 
     def reset(self):
+        self.android_controller.home()
+        self.android_controller.execute_adb_command("logcat -c") # Clear out logs
         for reset_cmd in self.reset_cmds:
             reset_cmd(self.android_controller)
         if self.app:

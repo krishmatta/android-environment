@@ -23,6 +23,7 @@ class AndroidController:
         execute_command(f"adb -s {self.device} {cmd}")
 
     def init_log_process(self):
+        self.execute_adb_command("logcat -c") # Clear out old logs
         self.log_process = subprocess.Popen(["adb", "-s", self.device, "logcat"], stdout=subprocess.PIPE)
         os.set_blocking(self.log_process.stdout.fileno(), False) # To make readline from log process non-blocking
 
