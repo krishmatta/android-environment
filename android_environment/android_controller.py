@@ -19,6 +19,9 @@ class AndroidController:
         self.width, self.height = self.get_device_size()
         self.init_log_process()
 
+    def execute_adb_command(self, cmd):
+        execute_command(f"adb -s {self.device} {cmd}")
+
     def init_log_process(self):
         self.log_process = subprocess.Popen(["adb", "-s", self.device, "logcat"], stdout=subprocess.PIPE)
         os.set_blocking(self.log_process.stdout.fileno(), False) # To make readline from log process non-blocking
@@ -53,7 +56,7 @@ class AndroidController:
         return ret
 
     def open_app(self, app):
-        return execute_command(f"adb -s {self.device} shell am start -n {app}")
+        return execute_command(f"adb -s {self.device} shell monkey -p {app} 1")
 
     def home(self):
         return execute_command(f"adb -s {self.device} shell input keyevent KEYCODE_HOME")

@@ -7,9 +7,10 @@ from gym import spaces
 from PIL import Image
 
 class AndroidEnv(gym.Env):
-    def __init__(self, device, reward_fn, app=None):
+    def __init__(self, device, reward_fn, reset_cmds, app=None):
         self.device = device
         self.reward_fn = reward_fn # Takes as input an iterator of the log. Returns reward based on log.
+        self.reset_cmds = reset_cmds # List of functions that take the android controller as input, ran when reset is called on environment.
         self.app = app
         self.android_controller = android_controller.AndroidController(self.device)
 
@@ -87,7 +88,8 @@ class AndroidEnv(gym.Env):
         return self.reward_fn(self.android_controller.get_log())
 
     def reset(self):
-        self.android_controller.reboot()
+        for reset_cmd in self.reset_cmds:
+            reset_cmd(self.android_controller)
         if self.app:
             self.android_controller.open_app(self.app)
         return self._get_obs(), {}
